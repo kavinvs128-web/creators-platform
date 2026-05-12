@@ -1,0 +1,116 @@
+import { Link } from 'react-router-dom';
+import ConnectionTest from '../components/common/ConnectionTest.jsx';
+
+
+const Home = () => {
+  return (
+    <div style={containerStyle}>
+      <div style={heroStyle}>
+        <h1 style={titleStyle}>Creator's Platform</h1>
+        <p style={subtitleStyle}>
+          Build, manage and grow your content like a pro.
+        </p>
+
+        <div style={ctaStyle}>
+          <Link to="/register" style={buttonStyle}>Get Started</Link>
+          <Link to="/login" style={secondaryButtonStyle}>Login</Link>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+        <ConnectionTest />
+      </div>
+
+      <div style={featuresStyle}>
+        <h2>Why Choose Creator's Platform?</h2>
+
+        <div style={featureGridStyle}>
+          <div style={featureCardStyle}>
+            <h3>🚀 Fast Setup</h3>
+            <p>Start building instantly with our powerful tools.</p>
+          </div>
+
+          <div style={featureCardStyle}>
+            <h3>🔐 Secure</h3>
+            <p>Your data is protected with modern security standards.</p>
+          </div>
+
+          <div style={featureCardStyle}>
+            <h3>📊 Analytics</h3>
+            <p>Track growth and performance in real-time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const containerStyle = {
+  minHeight: '100vh',
+};
+
+const heroStyle = {
+  textAlign: 'center',
+  padding: '4rem 2rem',
+  backgroundColor: '#f5f5f5',
+};
+
+const titleStyle = {
+  fontSize: '3rem',
+  marginBottom: '1rem',
+  color: '#333',
+};
+
+const subtitleStyle = {
+  fontSize: '1.25rem',
+  color: '#666',
+  marginBottom: '2rem',
+};
+
+const ctaStyle = {
+  display: 'flex',
+  gap: '1rem',
+  justifyContent: 'center',
+};
+
+const buttonStyle = {
+  backgroundColor: '#007bff',
+  color: 'white',
+  padding: '0.75rem 2rem',
+  borderRadius: '5px',
+  textDecoration: 'none',
+  fontWeight: 'bold',
+};
+
+const secondaryButtonStyle = {
+  backgroundColor: 'white',
+  color: '#007bff',
+  padding: '0.75rem 2rem',
+  borderRadius: '5px',
+  textDecoration: 'none',
+  fontWeight: 'bold',
+  border: '2px solid #007bff',
+};
+
+const featuresStyle = {
+  padding: '4rem 2rem',
+  textAlign: 'center',
+};
+
+const featureGridStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+  gap: '2rem',
+  marginTop: '2rem',
+  maxWidth: '1200px',
+  margin: '2rem auto',
+};
+
+const featureCardStyle = {
+  padding: '2rem',
+  backgroundColor: 'white',
+  borderRadius: '8px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+};
+
+export default Home;

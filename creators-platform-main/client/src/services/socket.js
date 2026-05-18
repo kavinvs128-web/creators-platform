@@ -1,8 +1,30 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000", {
+const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000", {
   autoConnect: false,
-  withCredentials: true,
 });
+
+export const connectSocket = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.error("Socket auth token missing");
+    return;
+  }
+
+  socket.auth = {
+    token,
+  };
+
+  if (!socket.connected) {
+    socket.connect();
+  }
+};
+
+export const disconnectSocket = () => {
+  if (socket.connected) {
+    socket.disconnect();
+  }
+};
 
 export default socket;

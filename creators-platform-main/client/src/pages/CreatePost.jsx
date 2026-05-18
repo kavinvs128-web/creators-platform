@@ -173,13 +173,4 @@ const buttonStyle = {
   transition: 'background-color 0.3s'
 };
 
-const errorStyle = {
-  padding: '1rem',
-  backgroundColor: '#f8d7da',
-  color: '#721c24',
-  borderRadius: '4px',
-  marginBottom: '1rem',
-  border: '1px solid #f5c6cb'
-};
-
 export default CreatePost;

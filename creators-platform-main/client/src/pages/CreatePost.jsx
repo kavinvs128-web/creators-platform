@@ -2,35 +2,45 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { showToast } from '../services/toast';
+import ImageUpload from '../components/ImageUpload';
 
 const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     category: 'Technology',
-    status: 'draft'
+    status: 'draft',
   });
+
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const navigate = useNavigate();
 
+  // Handle text input changes
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
+  // Handle image upload
+  const handleUpload = (formData) => {
+    console.log('FormData ready:', formData.get('image'));
+  };
+
+  // Handle post creation
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
 
     try {
       const response = await api.post('/api/posts', formData);
-      
+
       if (response.data.success) {
         showToast.success('Post created successfully!');
-        // Redirect to dashboard after successful creation
+
         navigate('/dashboard');
       }
     } catch (err) {
@@ -49,6 +59,7 @@ const CreatePost = () => {
           {/* Title */}
           <div style={fieldStyle}>
             <label>Title</label>
+
             <input
               type="text"
               name="title"
@@ -63,6 +74,7 @@ const CreatePost = () => {
           {/* Content */}
           <div style={fieldStyle}>
             <label>Content</label>
+
             <textarea
               name="content"
               value={formData.content}
@@ -77,6 +89,7 @@ const CreatePost = () => {
           {/* Category */}
           <div style={fieldStyle}>
             <label>Category</label>
+
             <select
               name="category"
               value={formData.category}
@@ -93,6 +106,7 @@ const CreatePost = () => {
           {/* Status */}
           <div style={fieldStyle}>
             <label>Status</label>
+
             <select
               name="status"
               value={formData.status}
@@ -104,8 +118,12 @@ const CreatePost = () => {
             </select>
           </div>
 
-          <button 
-            type="submit" 
+          {/* Image Upload Component */}
+          <ImageUpload onUpload={handleUpload} />
+
+          {/* Submit Button */}
+          <button
+            type="submit"
             disabled={isLoading}
             style={buttonStyle}
           >
@@ -120,7 +138,7 @@ const CreatePost = () => {
 const containerStyle = {
   minHeight: '100vh',
   padding: '2rem',
-  backgroundColor: '#f5f5f5'
+  backgroundColor: '#f5f5f5',
 };
 
 const formContainerStyle = {
@@ -129,19 +147,19 @@ const formContainerStyle = {
   backgroundColor: 'white',
   padding: '2rem',
   borderRadius: '8px',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
 const formStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '1.5rem'
+  gap: '1.5rem',
 };
 
 const fieldStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.5rem'
+  gap: '0.5rem',
 };
 
 const inputStyle = {
@@ -149,7 +167,7 @@ const inputStyle = {
   border: '1px solid #ddd',
   borderRadius: '4px',
   fontSize: '1rem',
-  fontFamily: 'inherit'
+  fontFamily: 'inherit',
 };
 
 const textareaStyle = {
@@ -158,7 +176,7 @@ const textareaStyle = {
   borderRadius: '4px',
   fontSize: '1rem',
   fontFamily: 'inherit',
-  resize: 'vertical'
+  resize: 'vertical',
 };
 
 const buttonStyle = {
@@ -170,7 +188,7 @@ const buttonStyle = {
   fontSize: '1rem',
   cursor: 'pointer',
   fontWeight: '500',
-  transition: 'background-color 0.3s'
+  transition: 'background-color 0.3s',
 };
 
 export default CreatePost;

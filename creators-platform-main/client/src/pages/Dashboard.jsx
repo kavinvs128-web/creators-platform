@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import socket, { connectSocket, disconnectSocket } from "../services/socket";
+import socket, {
+  connectSocket,
+  disconnectSocket,
+} from "../services/socket";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -27,10 +30,14 @@ const Dashboard = () => {
 
         setPosts(response.data.data);
         setPagination(response.data.pagination);
+
       } catch (err) {
+
         console.error(err);
         toast.error("Failed to load posts");
+
       } finally {
+
         setIsLoading(false);
       }
     };
@@ -60,14 +67,14 @@ const Dashboard = () => {
       console.log("❌ Disconnected");
     });
 
-    // Listen for real-time new post event
+    // Listen for new post event
     socket.on("newPost", (data) => {
       console.log("📢 New Post Event:", data);
 
       toast.success(data.message);
     });
 
-    // Cleanup listeners
+    // Cleanup
     return () => {
       socket.off("connect");
       socket.off("connect_error");
@@ -106,66 +113,115 @@ const Dashboard = () => {
     if (!confirmed) return;
 
     try {
-      const response = await api.delete(`/api/posts/${postId}`);
+
+      const response = await api.delete(
+        `/api/posts/${postId}`
+      );
 
       if (response.data.success) {
-        setPosts(posts.filter((post) => post._id !== postId));
+
+        setPosts(
+          posts.filter(
+            (post) => post._id !== postId
+          )
+        );
 
         setPagination((prev) => ({
           ...prev,
           total: prev.total - 1,
         }));
 
-        toast.success("Post deleted successfully");
+        toast.success(
+          "Post deleted successfully"
+        );
       }
+
     } catch (error) {
+
       console.error("Delete error:", error);
-      toast.error("Failed to delete post" + (error.response?.data?.message || "") );
+
+      toast.error(
+        "Failed to delete post " +
+          (error.response?.data?.message || "")
+      );
     }
   };
 
   return (
     <div style={containerStyle}>
+
       {/* Header */}
       <div style={headerStyle}>
         <h1>Welcome, {user.name}!</h1>
 
         <div style={{ display: "flex", gap: "1rem" }}>
+
           <Link to="/create">
             <button style={createButtonStyle}>
               + Create New Post
             </button>
           </Link>
 
-          <button onClick={logout} style={logoutButtonStyle}>
+          <button
+            onClick={logout}
+            style={logoutButtonStyle}
+          >
             Logout
           </button>
+
         </div>
       </div>
 
       {/* Posts */}
       <div style={postsContainerStyle}>
+
         {isLoading ? (
-          <div style={loadingStyle}>Loading posts...</div>
+
+          <div style={loadingStyle}>
+            Loading posts...
+          </div>
+
         ) : posts.length === 0 ? (
+
           <div style={emptyStateStyle}>
-            <p>You haven't created any posts yet.</p>
+            <p>
+              You haven't created any posts yet.
+            </p>
 
             <Link to="/create">
               Create your first post
             </Link>
           </div>
+
         ) : (
+
           <>
             {posts.map((post) => (
-              <div key={post._id} style={postCardStyle}>
+              <div
+                key={post._id}
+                style={postCardStyle}
+              >
+
+                {/* Cover Image */}
+                {post.coverImage && (
+                  <img
+                    src={post.coverImage}
+                    alt={`Cover image for ${post.title}`}
+                    style={imageStyle}
+                  />
+                )}
+
+                {/* Title */}
                 <h3>{post.title}</h3>
 
+                {/* Content */}
                 <p style={contentPreviewStyle}>
                   {post.content.substring(0, 150)}...
                 </p>
 
+                {/* Meta */}
                 <div style={metaStyle}>
+
                   <span>{post.category}</span>
 
                   <span
@@ -181,12 +237,16 @@ const Dashboard = () => {
                   </span>
 
                   <span>
-                    {new Date(post.createdAt).toLocaleDateString()}
+                    {new Date(
+                      post.createdAt
+                    ).toLocaleDateString()}
                   </span>
+
                 </div>
 
                 {/* Actions */}
                 <div style={actionsStyle}>
+
                   <Link to={`/edit/${post._id}`}>
                     <button style={editButtonStyle}>
                       Edit
@@ -194,49 +254,63 @@ const Dashboard = () => {
                   </Link>
 
                   <button
-                    onClick={() => handleDelete(post._id)}
+                    onClick={() =>
+                      handleDelete(post._id)
+                    }
                     style={deleteButtonStyle}
                   >
                     Delete
                   </button>
+
                 </div>
               </div>
             ))}
 
             {/* Pagination */}
             <div style={paginationStyle}>
+
               <button
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() =>
+                  handlePageChange(currentPage - 1)
+                }
                 disabled={!pagination.hasPrevPage}
                 style={{
                   ...paginationButtonStyle,
-                  opacity: !pagination.hasPrevPage ? 0.5 : 1,
-                  cursor: !pagination.hasPrevPage
-                    ? "not-allowed"
-                    : "pointer",
+                  opacity:
+                    !pagination.hasPrevPage ? 0.5 : 1,
+                  cursor:
+                    !pagination.hasPrevPage
+                      ? "not-allowed"
+                      : "pointer",
                 }}
               >
                 Previous
               </button>
 
               <span style={pageInfoStyle}>
-                Page {pagination.page} of {pagination.totalPages} (
+                Page {pagination.page} of{" "}
+                {pagination.totalPages} (
                 {pagination.total} total posts)
               </span>
 
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() =>
+                  handlePageChange(currentPage + 1)
+                }
                 disabled={!pagination.hasNextPage}
                 style={{
                   ...paginationButtonStyle,
-                  opacity: !pagination.hasNextPage ? 0.5 : 1,
-                  cursor: !pagination.hasNextPage
-                    ? "not-allowed"
-                    : "pointer",
+                  opacity:
+                    !pagination.hasNextPage ? 0.5 : 1,
+                  cursor:
+                    !pagination.hasNextPage
+                      ? "not-allowed"
+                      : "pointer",
                 }}
               >
                 Next
               </button>
+
             </div>
           </>
         )}
@@ -307,8 +381,16 @@ const postCardStyle = {
   padding: "1.5rem",
   backgroundColor: "#f9f9f9",
   borderRadius: "6px",
-  marginBottom: "1rem",
+  marginBottom: "1.5rem",
   borderLeft: "4px solid #007bff",
+};
+
+const imageStyle = {
+  width: "100%",
+  maxHeight: "250px",
+  objectFit: "cover",
+  borderRadius: "8px",
+  marginBottom: "1rem",
 };
 
 const contentPreviewStyle = {

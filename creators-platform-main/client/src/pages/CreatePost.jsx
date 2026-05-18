@@ -14,6 +14,11 @@ const CreatePost = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // Upload states
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState(null);
+
   const navigate = useNavigate();
 
   // Handle text input changes
@@ -25,8 +30,36 @@ const CreatePost = () => {
   };
 
   // Handle image upload
-  const handleUpload = (formData) => {
-    console.log('FormData ready:', formData.get('image'));
+  const handleUpload = async (imageFormData) => {
+    setUploading(true);
+    setUploadError('');
+
+    try {
+      const response = await api.post(
+        '/api/upload',
+        imageFormData
+      );
+
+      // Save Cloudinary URL
+      setCoverImageUrl(response.data.url);
+
+      showToast.success('Image uploaded successfully!');
+
+      return response.data.url;
+
+    } catch (err) {
+
+      const message =
+        err.response?.data?.message ||
+        'Image upload failed';
+
+      setUploadError(message);
+
+      showToast.error(message);
+
+    } finally {
+      setUploading(false);
+    }
   };
 
   // Handle post creation
@@ -36,16 +69,43 @@ const CreatePost = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/api/posts', formData);
+
+      const postData = {
+        ...formData,
+        coverImage: coverImageUrl,
+      };
+
+      const response = await api.post(
+        '/api/posts',
+        postData
+      );
 
       if (response.data.success) {
-        showToast.success('Post created successfully!');
+
+        showToast.success(
+          'Post created successfully!'
+        );
+
+        // Reset form
+        setFormData({
+          title: '',
+          content: '',
+          category: 'Technology',
+          status: 'draft',
+        });
+
+        setCoverImageUrl(null);
+        setUploadError('');
 
         navigate('/dashboard');
       }
+
     } catch (err) {
+
       showToast.apiError(err);
+
     } finally {
+
       setIsLoading(false);
     }
   };
@@ -56,6 +116,7 @@ const CreatePost = () => {
         <h1>Create New Post</h1>
 
         <form onSubmit={handleSubmit} style={formStyle}>
+
           {/* Title */}
           <div style={fieldStyle}>
             <label>Title</label>
@@ -96,10 +157,21 @@ const CreatePost = () => {
               onChange={handleChange}
               style={inputStyle}
             >
-              <option value="Technology">Technology</option>
-              <option value="Lifestyle">Lifestyle</option>
-              <option value="Travel">Travel</option>
-              <option value="Food">Food</option>
+              <option value="Technology">
+                Technology
+              </option>
+
+              <option value="Lifestyle">
+                Lifestyle
+              </option>
+
+              <option value="Travel">
+                Travel
+              </option>
+
+              <option value="Food">
+                Food
+              </option>
             </select>
           </div>
 
@@ -113,22 +185,55 @@ const CreatePost = () => {
               onChange={handleChange}
               style={inputStyle}
             >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="draft">
+                Draft
+              </option>
+
+              <option value="published">
+                Published
+              </option>
             </select>
           </div>
 
-          {/* Image Upload Component */}
+          {/* Image Upload */}
           <ImageUpload onUpload={handleUpload} />
+
+          {/* Upload Loading */}
+          {uploading && (
+            <p style={{ color: '#007bff' }}>
+              Uploading image, please wait...
+            </p>
+          )}
+
+          {/* Upload Error */}
+          {uploadError && (
+            <p style={{ color: 'red' }}>
+              {uploadError}
+            </p>
+          )}
+
+          {/* Preview Uploaded Image */}
+          {coverImageUrl && (
+            <img
+              src={coverImageUrl}
+              alt="Uploaded cover"
+              style={previewStyle}
+            />
+          )}
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || uploading}
             style={buttonStyle}
           >
-            {isLoading ? 'Creating...' : 'Create Post'}
+            {isLoading
+              ? 'Creating...'
+              : uploading
+              ? 'Uploading...'
+              : 'Create Post'}
           </button>
+
         </form>
       </div>
     </div>
@@ -177,6 +282,13 @@ const textareaStyle = {
   fontSize: '1rem',
   fontFamily: 'inherit',
   resize: 'vertical',
+};
+
+const previewStyle = {
+  width: '100%',
+  maxHeight: '250px',
+  objectFit: 'cover',
+  borderRadius: '8px',
 };
 
 const buttonStyle = {

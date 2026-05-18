@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import { showToast } from "../services/toast";
-import socket from "../services/socket";
+import socket, { connectSocket, disconnectSocket } from "../services/socket";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const { user, logout, loading } = useAuth();
@@ -29,7 +29,7 @@ const Dashboard = () => {
         setPagination(response.data.pagination);
       } catch (err) {
         console.error(err);
-        showToast.apiError(err);
+        toast.error("Failed to load posts");
       } finally {
         setIsLoading(false);
       }
@@ -42,26 +42,39 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
 
-    socket.connect();
+    // Connect socket
+    connectSocket();
 
+    // Connection success
     socket.on("connect", () => {
       console.log("✅ Connected:", socket.id);
     });
 
+    // Connection error
+    socket.on("connect_error", (err) => {
+      console.log("❌ Socket Error:", err.message);
+    });
+
+    // Disconnect event
     socket.on("disconnect", () => {
       console.log("❌ Disconnected");
     });
 
-    socket.on("connect_error", (err) => {
-      console.log("Socket Error:", err.message);
+    // Listen for real-time new post event
+    socket.on("newPost", (data) => {
+      console.log("📢 New Post Event:", data);
+
+      toast.success(data.message);
     });
 
+    // Cleanup listeners
     return () => {
       socket.off("connect");
-      socket.off("disconnect");
       socket.off("connect_error");
+      socket.off("disconnect");
+      socket.off("newPost");
 
-      socket.disconnect();
+      disconnectSocket();
     };
   }, [user]);
 
@@ -103,11 +116,11 @@ const Dashboard = () => {
           total: prev.total - 1,
         }));
 
-        showToast.success("Post deleted successfully");
+        toast.success("Post deleted successfully");
       }
     } catch (error) {
       console.error("Delete error:", error);
-      showToast.apiError(error);
+      toast.error("Failed to delete post" + (error.response?.data?.message || "") );
     }
   };
 

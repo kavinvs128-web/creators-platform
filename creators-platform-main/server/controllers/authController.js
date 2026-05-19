@@ -37,9 +37,13 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 4. Generate JWT token
+    // 4. Generate JWT token with required payload
     const token = jwt.sign(
-      { userId: user._id },
+      {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
@@ -56,8 +60,8 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
 
   } catch (error) {

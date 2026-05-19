@@ -13,6 +13,11 @@ const postSchema = new mongoose.Schema(
       required: [true, 'Content is required'],
       minlength: [10, 'Content must be at least 10 characters']
     },
+    coverImage: {
+      type: String,
+      default: null
+  },    
+
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

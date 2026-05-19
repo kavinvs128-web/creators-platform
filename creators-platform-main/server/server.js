@@ -26,13 +26,13 @@ const PORT = process.env.PORT || 5000;
 // Create HTTP server
 const httpServer = http.createServer(app);
 
-// Initialize Socket.io server with authentication middleware
+// Initialize Socket.io server
 const io = createSocketServer(httpServer);
 
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   })
 );
@@ -42,22 +42,23 @@ app.use(express.json());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-
-// Upload route
 app.use("/api/upload", uploadRoutes);
-
-// Pass io to post routes
 app.use("/api/posts", postRoutes(io));
 
-// Health check route
+// Health Check Route
 app.get("/api/health", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
-    message: "Server is running",
+    message: "Server is running successfully",
   });
 });
 
-// 404 handler
+// Default Route
+app.get("/", (req, res) => {
+  res.send("Backend API is running...");
+});
+
+// 404 Handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -65,10 +66,10 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
+// Error Handler
 app.use(errorHandler);
 
-// Start server
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// Start Server
+httpServer.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

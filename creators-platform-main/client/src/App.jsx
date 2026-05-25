@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-
+import { Toaster } from "react-hot-toast";
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -32,6 +32,7 @@ function App() {
           draggable
           pauseOnHover
         />
+        <Toaster position="top-right" />
 
         <Routes>
           {/* 🌐 Public */}

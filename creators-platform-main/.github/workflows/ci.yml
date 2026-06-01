@@ -2,38 +2,41 @@ name: CI
 
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
-      - name: Install server dependencies
+      - name: Install Server Dependencies
         run: |
           cd server
           npm ci
 
-      - name: Run server tests
+      - name: Run Server Tests
         run: |
           cd server
-          npm test -- --watchAll=false
+          npm test
 
-      - name: Install client dependencies
+      - name: Install Client Dependencies
         run: |
           cd client
           npm ci
 
-      - name: Run client tests
+      - name: Run Client Tests
         run: |
           cd client
           npm test -- --watchAll=false

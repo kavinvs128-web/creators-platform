@@ -23,8 +23,10 @@ export const protect = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    const userId = decoded.id || decoded.userId;
+
     // Get user from token (exclude password)
-    req.user = await User.findById(decoded.userId).select('-password');
+    req.user = await User.findById(userId).select('-password');
 
     if (!req.user) {
       return res.status(401).json({

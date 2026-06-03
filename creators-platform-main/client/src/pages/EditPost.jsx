@@ -19,30 +19,30 @@ const EditPost = () => {
 
   // Fetch post data when component mounts
   useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await api.get(`/api/posts/${id}`);
+        const post = response.data.data;
+        
+        // Pre-fill form with existing data
+        setFormData({
+          title: post.title,
+          content: post.content,
+          category: post.category,
+          status: post.status
+        });
+        
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        showToast.apiError(err);
+        setHasError(true);
+        setIsLoading(false);
+      }
+    };
+
     fetchPost();
   }, [id]);
-
-  const fetchPost = async () => {
-    try {
-      const response = await api.get(`/api/posts/${id}`);
-      const post = response.data.data;
-      
-      // Pre-fill form with existing data
-      setFormData({
-        title: post.title,
-        content: post.content,
-        category: post.category,
-        status: post.status
-      });
-      
-      setIsLoading(false);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      showToast.apiError(err);
-      setHasError(true);
-      setIsLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -234,15 +234,6 @@ const submitButtonStyle = {
   fontSize: '1rem',
   cursor: 'pointer',
   fontWeight: '500'
-};
-
-const errorStyle = {
-  padding: '1rem',
-  backgroundColor: '#f8d7da',
-  color: '#721c24',
-  borderRadius: '4px',
-  marginBottom: '1rem',
-  border: '1px solid #f5c6cb'
 };
 
 const loadingStyle = {

@@ -40,7 +40,6 @@ const Login = () => {
       }
 
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Failed to login';
       showToast.apiError(error);
     }
 

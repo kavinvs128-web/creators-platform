@@ -3,7 +3,7 @@ const Footer = () => {
     <footer style={footerStyle}>
       <div style={containerStyle}>
         <p>&copy; 2024 {"Creator's Platform"}. All rights reserved.</p>
-        <p>Built by {"Parthasarathy R"}</p>
+        <p>Built by {" Kavin Venkatesan"}</p>
       </div>
     </footer>
   );

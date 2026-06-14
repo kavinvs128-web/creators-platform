@@ -1,22 +1,36 @@
-import express from 'express';
-import { protect } from '../middleware/auth.js';
-import { 
-  createPost, 
-  getPosts, 
+import express from "express";
+
+import { protect } from "../middleware/auth.js";
+
+import {
+  createPost,
+  getPosts,
   getPostById,
   updatePost,
-  deletePost
-} from '../controllers/postController.js';
+  deletePost,
+} from "../controllers/postController.js";
 
-const router = express.Router();
+const postRoutes = (io) => {
+  const router = express.Router();
 
-// Specific routes BEFORE parameterized routes
-router.post('/', protect, createPost);
-router.get('/', protect, getPosts);
+  // Create Post + Emit Socket Event
+  router.post("/", protect, (req, res, next) => {
+    createPost(req, res, next, io);
+  });
 
-// Parameterized routes
-router.get('/:id', protect, getPostById);
-router.put('/:id', protect, updatePost);
-router.delete('/:id', protect, deletePost);
+  // Get All Posts
+  router.get("/", protect, getPosts);
 
-export default router;
+  // Get Single Post
+  router.get("/:id", protect, getPostById);
+
+  // Update Post
+  router.put("/:id", protect, updatePost);
+
+  // Delete Post
+  router.delete("/:id", protect, deletePost);
+
+  return router;
+};
+
+export default postRoutes;
